@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style>
+	body { margin: 0; }
+	.triangle { 
+		float:left; 
+		margin-left: -15px; 
+	}
+
+	.triangle svg g polygon {
+		fill: none;
+		stroke: none;
+	}
+
+	.downDiv { }
+	.first { margin-left: 0px; }
+	.shifted-first { /* these are non-interactive */
+		margin-left: -31px; 
+	}
+	</style>
+</head>
+<body>
+
+<div id="container">
+
+
+</div>
+
+
+<script type="text/javascript">
+	var down = '<svg width="46px" height="38px" viewBox="0 0 46 38" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">\
+				    <defs></defs>\
+				    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">\
+				        <polygon id="triangle_down" stroke="#979797" fill="#D8D8D8" sketch:type="MSShapeGroup" transform="translate(23.000000, 13.000000) scale(1, -1) translate(-23.000000, -13.000000) " points="23 -12 44.6506351 25.5 1.34936491 25.5 "></polygon>\
+				    </g>\
+				</svg>';
+	var up = '<svg width="46px" height="38px" viewBox="0 0 46 38" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">\
+				    <defs></defs>\
+				    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">\
+				        <polygon id="triangle_up" stroke="#979797" fill="#D8D8D8" sketch:type="MSShapeGroup" points="23 0 44.6506351 37.5 1.34936491 37.5 "></polygon>\
+				    </g>\
+				</svg>';
+	window.onload = function() {
+
+
+		// svg width is 46px, margin-left is -15px, remove first element from count
+		var dimensions = {
+			svgWidth: 46,
+			marginLeft: 15
+		}
+
+		var hue = 0
+
+		window.setInterval(changeHue1, 25);
+		window.setInterval(changeHue2, 50);
+
+		function changeHue1() { 
+			hue = (hue + 1) % 360; 
+		}
+
+		function changeHue2() {
+			for (var i = 0; i < document.getElementsByClassName('triangle').length; i++) {
+				var polygon = document.getElementsByClassName('triangle')[i].getElementsByTagName('polygon')[0];
+				if (polygon.style.fill !== "none") {
+					document.getElementsByClassName('triangle')[i].dataset.hue = (parseInt(document.getElementsByClassName('triangle')[i].dataset.hue,10) + 1) % 360;
+					polygon.style.fill = 'hsla('+document.getElementsByClassName('triangle')[i].dataset.hue+', 50%, 50%, 1)'
+				}
+			}
+		}
+
+
+
+		var elements = window.innerWidth / (dimensions.svgWidth + dimensions.marginLeft) - 1;
+		var rows = window.innerHeight / (dimensions.svgWidth/2 + dimensions.marginLeft);
+		var marginTop = 0;
+		for (var i = 0; i < rows; i++) {
+			// if (i % 2 === 0) elements = evenElements;
+			// else elements = oddElements;
+			
+			
+			for (var j = 0; j < elements; j++) {
+				var upClasses = "upDiv triangle";
+				if (j === 0) {
+					if (i % 2 === 0) upClasses += " first";
+					else upClasses += " shifted-first";
+				}
+				addTriangle('up', upClasses, marginTop);
+				addTriangle('down', 'downDiv triangle', marginTop);
+			}
+			if (i % 2 !== 0) addTriangle('up', 'upDiv triangle', marginTop);
+			marginTop += 0.2;
+		}
+
+		function addTriangle(type, classes, marginTop) {
+			var triangle = document.createElement('div');
+			type === 'up' ? triangle.innerHTML = up : triangle.innerHTML = down;
+			triangle.className = classes;
+			triangle.style.marginTop = marginTop + 'px';
+			triangle.addEventListener('mouseover', color, false)
+			document.getElementById("container").appendChild(triangle);
+		}
+
+		function color() {
+			// console.log(this.className.split(' '))
+			if (!this.className.split(' ').includes('shifted-first')) {
+				this.getElementsByTagName('polygon')[0].style.fill = 'hsla('+hue+', 50%, 50%, 1)';
+				this.dataset.hue = hue;
+			}
+		}
+		
+
+		
+		
+		
+		// var parser = new DOMParser();
+		// var newUp = parser.parseFromString(up, "image/svg+xml");
+		// document.getElementById("container").appendChild(newUp);
+		// document.getElementById("container").innerHTML = up;
+		// document.getElementById("container").innerHTML += down;
+	}
+
+
+
+</script>
+</body>
+</html>
